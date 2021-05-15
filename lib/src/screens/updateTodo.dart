@@ -1,25 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/src/models/todoModel.dart';
 
-class CreateTodo extends StatefulWidget {
+class UpdateTodo extends StatefulWidget {
+
+  final Todo todo;
+  UpdateTodo(this.todo);
+
   @override
-  CreateTodoState createState() => CreateTodoState();
+  UpdateTodoState createState() => UpdateTodoState();
 }
 
-class CreateTodoState extends State<CreateTodo> {
+class UpdateTodoState extends State<UpdateTodo> {
 
-  final formkey = GlobalKey<FormState>();
+
+  TextEditingController controllerText = TextEditingController();
+  TextEditingController controllerDescription = TextEditingController();
+  List<Todo> todolist = [];
   String? todoTitle;
   String? todoDescription;
 
   bool ispicked = false;
+  bool createTodoScreen = true;
 
   DateTime selectedDate = DateTime.now();
+
   Future<void> selectDate(BuildContext context) async {
-    final DateTime?  picked = (await showDatePicker(
+    final DateTime? picked = (await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(2015,8),
+        firstDate: DateTime(2015, 8),
         lastDate: DateTime(2030)));
     if (picked != null && picked != selectedDate)
       setState(() {
@@ -28,10 +37,19 @@ class CreateTodoState extends State<CreateTodo> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controllerText.text = widget.todo.title!;
+    controllerDescription.text = widget.todo.description!;
+    selectedDate = widget.todo.date!;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create Todo"),
+        title: Text("Update Todo"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -39,7 +57,6 @@ class CreateTodoState extends State<CreateTodo> {
           padding: EdgeInsets.all(12),
           margin: EdgeInsets.all(12),
           child: Form(
-            key: formkey,
             child: Column(
               children: [
                 // mainAxisSize: MainAxisSize.max,
@@ -58,21 +75,47 @@ class CreateTodoState extends State<CreateTodo> {
     );
   }
 
+  SizedBox buildSaveButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          onUpdateButtonClick();
+        },
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.all(16),
+          // primary: Color(0xff625834),
+        ),
+        child: Text(
+          "Update",
+        ),
+      ),
+    );
+  }
 
+  Widget buildDatePickerField(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton(
+          onPressed: () {
+            selectDate(context);
+            setState(() => ispicked = true);
+          },
+          style: ElevatedButton.styleFrom(
+            // primary: Color(0xff625834),
+            padding: EdgeInsets.all(16),
+          ),
+          child: Text("${selectedDate.toLocal()}".split(' ')[0]))
+    );
+  }
 
   Widget buildAddTaskField(BuildContext context) {
     final node = FocusScope.of(context);
     return TextFormField(
+      controller: controllerText,
       onChanged: (String? val) {
         todoTitle = val;
       },
-      validator: (todoTitle) {
-        if (todoTitle!.isEmpty){
-          return "Please provide the title";
-        }else{
-          return null;
-        }
-      } ,
       decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: 'Add Title',
@@ -82,19 +125,12 @@ class CreateTodoState extends State<CreateTodo> {
     );
   }
 
-
   Widget buildDescriptionField(BuildContext context) {
     return TextFormField(
+      controller: controllerDescription,
       onChanged: (String? val) {
         todoDescription = val;
       },
-      validator: (todoDescription) {
-        if (todoDescription!.isEmpty){
-          return "Please provide the description.";
-        }else{
-          return null;
-        }
-      } ,
       minLines: 2,
       keyboardType: TextInputType.multiline,
       maxLines: null,
@@ -105,75 +141,9 @@ class CreateTodoState extends State<CreateTodo> {
     );
   }
 
-  Widget buildDatePickerField(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: ElevatedButton(
-          onPressed: () {
-              selectDate(context);
-              setState(() => ispicked = true);
-          },
-          style: ElevatedButton.styleFrom(
-            // primary: Color(0xff625834),
-            padding: EdgeInsets.all(16),
-          ),
-          child: ispicked ? Text("${selectedDate.toLocal()}".split(' ')[0]) : Text("Pick completion date")),
-    );
+  void onUpdateButtonClick() {
+    Navigator.of(context).pop(Todo(controllerText.text, controllerDescription.text, selectedDate));
+
+
   }
-
-
-  SizedBox buildSaveButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          formkey.currentState!.validate();
-          onSaveButtonClick();
-        },
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.all(16),
-          // primary: Color(0xff625834),
-        ),
-        child: Text(
-          "Save",
-        ),
-      ),
-    );
-  }
-
-
-  void onSaveButtonClick() {
-    Navigator.of(context).pop(Todo(todoTitle!, todoDescription!, selectedDate));
-  }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

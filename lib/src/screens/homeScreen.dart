@@ -19,7 +19,7 @@ class HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         title: Text("Todo Woo"),
       ),
-      body: todolist.isEmpty ? Center(child: Text("Your todos will appear here")) : TodoListWidget(todolist),
+      body: todolist.isEmpty ? Center(child: Text("Your todos will appear here")) : TodoListWidget(todolist, updateTodo, removeTodo),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           pushCreateTodoScreen();
@@ -38,6 +38,19 @@ class HomeScreenState extends State<HomeScreen> {
     ));
     setState(() {
       todolist.add(data);
+    });
+  }
+
+  void updateTodo(Todo todo, String title){
+    int index = todolist.indexWhere((singleTodo) => singleTodo.title==title);
+    setState(() {
+      todolist[index] = todo;
+    });
+  }
+
+  void removeTodo(String title){
+    setState(() {
+      todolist.removeWhere((selectedTodo) => selectedTodo.title == title);
     });
   }
 
