@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/src/mixin/validation_mixin.dart';
 import 'package:todo_app/src/models/todoModel.dart';
 
 class UpdateTodo extends StatefulWidget {
@@ -10,8 +11,9 @@ class UpdateTodo extends StatefulWidget {
   UpdateTodoState createState() => UpdateTodoState();
 }
 
-class UpdateTodoState extends State<UpdateTodo> {
+class UpdateTodoState extends State<UpdateTodo>  {
 
+  final formkey = GlobalKey<FormState>();
 
   TextEditingController controllerText = TextEditingController();
   TextEditingController controllerDescription = TextEditingController();
@@ -80,7 +82,7 @@ class UpdateTodoState extends State<UpdateTodo> {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          onUpdateButtonClick();
+          Navigator.of(context).pop(Todo(controllerText.text, controllerDescription.text, selectedDate));
         },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.all(16),
@@ -113,7 +115,7 @@ class UpdateTodoState extends State<UpdateTodo> {
     final node = FocusScope.of(context);
     return TextFormField(
       controller: controllerText,
-      onChanged: (String? val) {
+      onSaved: (String? val) {
         todoTitle = val;
       },
       decoration: InputDecoration(
@@ -141,9 +143,4 @@ class UpdateTodoState extends State<UpdateTodo> {
     );
   }
 
-  void onUpdateButtonClick() {
-    Navigator.of(context).pop(Todo(controllerText.text, controllerDescription.text, selectedDate));
-
-
-  }
 }

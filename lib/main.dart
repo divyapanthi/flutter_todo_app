@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/src/screens/homeScreen.dart';
+import 'package:todo_app/src/screens/welcomeScreen.dart';
 
 void main() {
   runApp((App()));
@@ -14,7 +15,7 @@ class App extends StatelessWidget {
         // accentColor: Color(0xff30362f),
         primarySwatch: Colors.amber,
       ),
-      home: HomeScreen(),
+      home: WelcomeScreen(),
     );
   }
 }

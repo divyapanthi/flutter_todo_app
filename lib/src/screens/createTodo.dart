@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/src/mixin/validation_mixin.dart';
 import 'package:todo_app/src/models/todoModel.dart';
 
 class CreateTodo extends StatefulWidget {
@@ -6,7 +7,7 @@ class CreateTodo extends StatefulWidget {
   CreateTodoState createState() => CreateTodoState();
 }
 
-class CreateTodoState extends State<CreateTodo> {
+class CreateTodoState extends State<CreateTodo> with ValidationMixin {
 
   final formkey = GlobalKey<FormState>();
   String? todoTitle;
@@ -63,16 +64,10 @@ class CreateTodoState extends State<CreateTodo> {
   Widget buildAddTaskField(BuildContext context) {
     final node = FocusScope.of(context);
     return TextFormField(
-      onChanged: (String? val) {
+      onSaved: (String? val) {
         todoTitle = val;
       },
-      validator: (todoTitle) {
-        if (todoTitle!.isEmpty){
-          return "Please provide the title";
-        }else{
-          return null;
-        }
-      } ,
+      validator: validateTask,
       decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: 'Add Title',
@@ -85,16 +80,10 @@ class CreateTodoState extends State<CreateTodo> {
 
   Widget buildDescriptionField(BuildContext context) {
     return TextFormField(
-      onChanged: (String? val) {
+      onSaved: (String? val) {
         todoDescription = val;
       },
-      validator: (todoDescription) {
-        if (todoDescription!.isEmpty){
-          return "Please provide the description.";
-        }else{
-          return null;
-        }
-      } ,
+      validator: validateDescription,
       minLines: 2,
       keyboardType: TextInputType.multiline,
       maxLines: null,
@@ -127,7 +116,10 @@ class CreateTodoState extends State<CreateTodo> {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          formkey.currentState!.validate();
+          bool isValid = formkey.currentState!.validate();
+          if(isValid){
+            formkey.currentState!.save();
+          }
           onSaveButtonClick();
         },
         style: ElevatedButton.styleFrom(
